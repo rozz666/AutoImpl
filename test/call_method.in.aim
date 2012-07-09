@@ -1,0 +1,6 @@
+specification Object_with_method
+    mock: a_mock
+    an_object = Object_with_method new
+    expect: a_mock method
+    an_object call_method_on:a_mock
+end

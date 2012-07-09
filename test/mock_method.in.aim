@@ -1,0 +1,10 @@
+specification Object1
+    mock: m
+
+    o = Object1 with_mock:m
+
+    division method
+        expect: m mocked_method
+        o method
+    end
+end

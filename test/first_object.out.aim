@@ -1,0 +1,4 @@
+class First_object
+    init new
+    end
+end

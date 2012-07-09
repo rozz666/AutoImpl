@@ -1,0 +1,8 @@
+class Object_with_method
+    init new
+    end
+    
+    def call_method_on:obj
+        obj method
+    end
+end

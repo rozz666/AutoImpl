@@ -1,0 +1,9 @@
+class Object1
+
+    init with_mock:m(m)
+    end
+
+    def method
+        m mocked_method
+    end
+end
