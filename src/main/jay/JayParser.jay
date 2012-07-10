@@ -1,0 +1,48 @@
+%{
+package org.autoimpl.parser;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.util.HashMap;
+
+import org.autoimpl.cst.Specification;
+import org.autoimpl.parser.jay.Input;
+import org.autoimpl.parser.jay.SyntaxError;
+
+public class JayParser {
+
+    private Input input;
+    private Specification specification;
+%}
+
+%token IDENTIFIER
+%token SPECIFICATION
+%token END
+%token EOL 10
+
+%start grammar
+
+%%
+
+grammar:
+    SPECIFICATION IDENTIFIER { specification.setName((Identifier)$2); } EOL END
+
+%%
+    private void yyerror(int[] expected) {
+    }
+
+    public Specification parseFile(Reader reader) {
+        this.specification = new Specification();
+    	try {
+	        HashMap<String, Integer> keywords = new HashMap<String, Integer>();
+	        keywords.put("specification", SPECIFICATION);
+	        keywords.put("end", END);
+	        HashMap<Character, Integer> punctuation = new HashMap<Character, Integer>();
+	        this.input = new Scanner(reader, IDENTIFIER, keywords, punctuation);
+	        yyparse(input);
+	    } catch (SyntaxError e) {
+	    } catch (IOException e) {
+		}
+        return this.specification;
+    }
+}
