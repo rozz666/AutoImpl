@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
 
+import org.autoimpl.ErrorLogger;
 import org.autoimpl.cst.Specification;
 import org.autoimpl.parser.jay.Input;
 import org.autoimpl.parser.jay.SyntaxError;
@@ -14,6 +15,12 @@ public class JayParser {
     private Input input;
     private Specification specification;
     private boolean failed;
+    private ErrorLogger errorLogger;
+    
+    public JayParser(ErrorLogger errorLogger)
+    {
+        this.errorLogger = errorLogger;
+    }
 %}
 
 %token IDENTIFIER
@@ -31,6 +38,8 @@ grammar:
 %%
     private void yyerror(int[] expected) {
     	failed = true;
+		errorLogger.logError(new Position(input.row(), input.column()),
+				"missing 'specification'");
     }
 
     public Specification parseFile(Reader reader) {
