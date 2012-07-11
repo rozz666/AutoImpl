@@ -32,13 +32,24 @@ public class JayParser {
 
 %%
 
+eols:
+	| EOL eols
+
 grammar:
-    SPECIFICATION IDENTIFIER { specification.setName((Identifier)$2); } EOL END
+    eols SPECIFICATION IDENTIFIER { specification.setName((Identifier)$3); } EOL END
+  
 
 %%
+    private static boolean contains(int[] tokens, int expected) {
+        for (int token : tokens)
+            if (token == expected)
+                return true;
+        return false;
+    }
+
     private void yyerror(int[] expected) {
     	failed = true;
-		String missing = expected[0] == SPECIFICATION ? "'specification'"
+		String missing = contains(expected, SPECIFICATION) ? "'specification'"
 				: "specification name";
 		errorLogger.logError(new Position(input.row(), input.column()),
 				"missing " + missing);

@@ -46,6 +46,12 @@ public class JayParserTest {
 		assertEquals(new Identifier("spec_name", new Position(1, 15)),
 				spec.name());
 	}
+	
+	@Test
+	public void shouldIgnoreEolsBeforeSpecification() {
+		parse("\n\nspecification a\nend");
+		assertNotNull(spec);
+	}
 
 	@Test
 	public void shouldFailWhenParsingAnEmptyString() {
