@@ -21,11 +21,24 @@ public class JayParserTest {
 	private void parse(String source) {
 		spec = parser.parseFile(new StringReader(source));
 	}
-    
+
+	private void assertErrorWithSource(String source, final int row,
+			final int column, final String message) {
+		context.checking(new Expectations() {
+			{
+				oneOf(logger).logError(
+						with(equalTo(new Position(row, column))),
+						with(equalTo(message)));
+			}
+		});
+		parse(source);
+		assertNull(spec);
+	}
+
 	@After
-    public void tearDown() {
-        context.assertIsSatisfied();
-    }
+	public void tearDown() {
+		context.assertIsSatisfied();
+	}
 
 	@Test
 	public void shouldParseAnEmptySpecification() {
@@ -36,14 +49,13 @@ public class JayParserTest {
 
 	@Test
 	public void shouldFailWhenParsingAnEmptyString() {
-		context.checking(new Expectations() {
-			{
-				oneOf(logger).logError(with(equalTo(new Position(1, 1))),
-						with(equalTo("missing 'specification'")));
-			}
-		});
-		parse("");
-		assertNull(spec);
+		assertErrorWithSource("", 1, 1, "missing 'specification'");
+	}
+
+	@Test
+	public void shouldFailWhenMissingSpecificationName() {
+		assertErrorWithSource("specification ", 1, 15,
+				"missing specification name");
 	}
 
 }

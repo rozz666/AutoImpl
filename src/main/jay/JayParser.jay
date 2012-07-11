@@ -38,8 +38,10 @@ grammar:
 %%
     private void yyerror(int[] expected) {
     	failed = true;
+		String missing = expected[0] == SPECIFICATION ? "'specification'"
+				: "specification name";
 		errorLogger.logError(new Position(input.row(), input.column()),
-				"missing 'specification'");
+				"missing " + missing);
     }
 
     public Specification parseFile(Reader reader) {
