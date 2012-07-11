@@ -13,6 +13,7 @@ public class JayParser {
 
     private Input input;
     private Specification specification;
+    private boolean failed;
 %}
 
 %token IDENTIFIER
@@ -29,6 +30,7 @@ grammar:
 
 %%
     private void yyerror(int[] expected) {
+    	failed = true;
     }
 
     public Specification parseFile(Reader reader) {
@@ -43,6 +45,6 @@ grammar:
 	    } catch (SyntaxError e) {
 	    } catch (IOException e) {
 		}
-        return this.specification;
+        return failed ? null : this.specification;
     }
 }
