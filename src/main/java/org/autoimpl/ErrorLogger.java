@@ -1,6 +1,6 @@
 package org.autoimpl;
 
-import org.autoimpl.parser.Position;
+import org.autoimpl.cst.Position;
 
 public interface ErrorLogger {
 

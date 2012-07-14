@@ -7,6 +7,8 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.HashMap;
 
+import org.autoimpl.cst.Identifier;
+import org.autoimpl.cst.Position;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;

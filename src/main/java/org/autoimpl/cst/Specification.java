@@ -2,7 +2,6 @@ package org.autoimpl.cst;
 
 import java.util.List;
 
-import org.autoimpl.parser.Identifier;
 
 public class Specification {
 

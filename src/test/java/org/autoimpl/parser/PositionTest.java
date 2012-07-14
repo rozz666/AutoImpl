@@ -2,6 +2,7 @@ package org.autoimpl.parser;
 
 import static org.junit.Assert.*;
 
+import org.autoimpl.cst.Position;
 import org.junit.Test;
 
 public class PositionTest {

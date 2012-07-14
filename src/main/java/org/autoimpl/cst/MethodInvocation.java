@@ -1,6 +1,5 @@
 package org.autoimpl.cst;
 
-import org.autoimpl.parser.Identifier;
 
 public class MethodInvocation {
 

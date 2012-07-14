@@ -5,6 +5,8 @@ import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.autoimpl.cst.Identifier;
+import org.autoimpl.cst.Position;
 import org.autoimpl.parser.jay.Input;
 
 public class Scanner implements Input {

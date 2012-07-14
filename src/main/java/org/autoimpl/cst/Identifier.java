@@ -1,4 +1,5 @@
-package org.autoimpl.parser;
+package org.autoimpl.cst;
+
 
 public class Identifier {
 

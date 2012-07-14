@@ -6,7 +6,9 @@ import static org.hamcrest.Matchers.*;
 import java.io.StringReader;
 
 import org.autoimpl.ErrorLogger;
+import org.autoimpl.cst.Identifier;
 import org.autoimpl.cst.MethodInvocation;
+import org.autoimpl.cst.Position;
 import org.autoimpl.cst.Specification;
 import org.jmock.Expectations;
 import org.jmock.Mockery;

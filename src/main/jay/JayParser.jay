@@ -8,7 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.autoimpl.ErrorLogger;
+import org.autoimpl.cst.Identifier;
 import org.autoimpl.cst.MethodInvocation;
+import org.autoimpl.cst.Position;
 import org.autoimpl.cst.Specification;
 import org.autoimpl.parser.jay.Input;
 import org.autoimpl.parser.jay.SyntaxError;
