@@ -63,5 +63,10 @@ public class JayParserTest {
 		assertErrorWithSource("specification ", 1, 15,
 				"missing specification name");
 	}
+	
+	@Test
+	public void shouldFailWhenMissingEnd() {
+		assertErrorWithSource("specification x\n", 2, 1, "missing 'end'");
+	}
 
 }

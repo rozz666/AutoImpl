@@ -47,14 +47,20 @@ grammar:
         return false;
     }
 
-    private void yyerror(int[] expected) {
-    	failed = true;
-		String missing = contains(expected, SPECIFICATION) ? "'specification'"
-				: "specification name";
+	private void yyerror(int[] expected) {
+		failed = true;
 		errorLogger.logError(new Position(input.row(), input.column()),
-				"missing " + missing);
-    }
+				"missing " + whatIsMissing(expected));
+	}
 
+	private String whatIsMissing(int[] expected) {
+		if (contains(expected, SPECIFICATION))
+			return "'specification'";
+		if (contains(expected, END))
+			return "'end'";
+		return "specification name";
+	}
+	
     public Specification parseFile(Reader reader) {
         this.specification = new Specification();
     	try {
