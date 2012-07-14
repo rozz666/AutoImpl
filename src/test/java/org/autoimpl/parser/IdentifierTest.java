@@ -22,4 +22,10 @@ public class IdentifierTest {
         assertFalse(new Identifier("abc", new Position(3, 4)).equals(new Identifier("xyz", new Position(3, 4))));
         assertFalse(new Identifier("abc", new Position(3, 4)).equals(new Identifier("abc", new Position(5, 4))));
     }
+    
+    @Test
+    public void testToString() {
+    	Position p = new Position(7, 3);
+    	assertEquals("xyz at " + p.toString(), new Identifier("xyz", p).toString());
+    }
 }

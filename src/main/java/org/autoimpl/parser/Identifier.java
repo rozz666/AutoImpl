@@ -24,4 +24,8 @@ public class Identifier {
         return name.equals(id.name) && position.equals(id.position);
     }
 
+    @Override
+    public String toString() {
+    	return name + " at " + position.toString();
+    }
 }

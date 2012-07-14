@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.*;
 import java.io.StringReader;
 
 import org.autoimpl.ErrorLogger;
+import org.autoimpl.cst.MethodInvocation;
 import org.autoimpl.cst.Specification;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -72,6 +73,15 @@ public class JayParserTest {
 	@Test
 	public void shouldFailWhenMissingEolAfterSpecificationName() {
 		assertErrorWithSource("specification x", 1, 16, "missing end-of-line");
+	}
+	
+	@Test
+	public void shouldParseSendingAMessageToAnObject() {
+		parse("specification x\nAn_object new\nend");
+		assertEquals(1, spec.statements().size());
+		MethodInvocation m = (MethodInvocation)spec.statements().get(0);
+		assertEquals(new Identifier("An_object", new Position(2, 1)), m.object());
+		assertEquals(new Identifier("new", new Position(2, 11)), m.method());
 	}
 
 }
