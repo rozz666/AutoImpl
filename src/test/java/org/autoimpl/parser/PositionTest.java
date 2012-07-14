@@ -22,5 +22,10 @@ public class PositionTest {
         assertFalse(new Position(1, 6).equals(new Position(3, 6)));
         assertFalse(new Position(3, 2).equals(new Position(3, 6)));
     }
+    
+    @Test
+    public void testToString() {
+    	assertEquals("6:9", new Position(6, 9).toString());
+    }
 
 }

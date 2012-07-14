@@ -58,6 +58,8 @@ grammar:
 			return "'specification'";
 		if (contains(expected, END))
 			return "'end'";
+		if (contains(expected, EOL))
+			return "end-of-line";
 		return "specification name";
 	}
 	

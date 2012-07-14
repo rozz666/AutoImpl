@@ -46,7 +46,7 @@ public class JayParserTest {
 		assertEquals(new Identifier("spec_name", new Position(1, 15)),
 				spec.name());
 	}
-	
+
 	@Test
 	public void shouldIgnoreEolsBeforeSpecification() {
 		parse("\n\nspecification a\nend");
@@ -63,10 +63,15 @@ public class JayParserTest {
 		assertErrorWithSource("specification ", 1, 15,
 				"missing specification name");
 	}
-	
+
 	@Test
 	public void shouldFailWhenMissingEnd() {
 		assertErrorWithSource("specification x\n", 2, 1, "missing 'end'");
+	}
+
+	@Test
+	public void shouldFailWhenMissingEolAfterSpecificationName() {
+		assertErrorWithSource("specification x", 1, 16, "missing end-of-line");
 	}
 
 }
