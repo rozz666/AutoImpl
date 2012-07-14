@@ -11,142 +11,180 @@ import org.autoimpl.parser.jay.Input;
 
 public class Scanner implements Input {
 
-    private LAReader reader;
-    private final int identifierToken;
-    private HashMap<String, Integer> keywords;
-    private Map<Character, Integer> punctuation;
-    private int currentColumn = 1;
-    private int currentRow = 1;
-    private int currentToken = 0;
-    private Object currentValue = null;
-    private int tokenLen = 0;
+	static private class Cursor {
+		private int column = 1;
+		private int row = 1;
 
-    static private class LAReader {
-        private Reader reader;
-        private int next = -1;
+		public void next(int n) {
+			column += n;
+		}
 
-        public LAReader(Reader reader) {
-            this.reader = reader;
-        }
+		void newLine() {
+			column = 1;
+			++row;
+		}
 
-        public int lookAhead() throws IOException {
-            prepareLookAhead();
-            return next == '\r' ? '\n' : next;
-        }
+		int column() {
+			return column;
+		}
 
-        private void prepareLookAhead() throws IOException {
-            if (next == -1)
-                next = reader.read();
-        }
+		int row() {
+			return row;
+		}
+	}
 
-        public int read() throws IOException {
-            prepareLookAhead();
-            int ch = next;
-            next = reader.read();
-            if ((ch == '\r' && next == '\n') || (ch == '\n' && next == '\r'))
-                next = reader.read();
-            return ch == '\r' ? '\n' : ch;
-        }
-    }
+	private static class LAReader {
+		private Reader reader;
+		private int next = -1;
 
-    public Scanner(Reader reader, int identifierToken, Map<String, Integer> keywords,
-                    Map<Character, Integer> punctuation) {
-        this.reader = new LAReader(reader);
-        this.identifierToken = identifierToken;
-        this.keywords = new HashMap<String, Integer>(keywords);
-        this.punctuation = new HashMap<Character, Integer>(punctuation);
-    }
+		public LAReader(Reader reader) {
+			this.reader = reader;
+		}
 
-    @Override
-    public boolean advance() throws IOException {
-        movePastCurrentToken();
-        currentToken = getToken();
-        return currentToken != 0;
-    }
+		public int lookAhead() throws IOException {
+			prepareLookAhead();
+			return crToLf(next);
+		}
 
-    private void movePastCurrentToken() {
-        if (currentToken == '\n') {
-            currentColumn = 1;
-            ++currentRow;
-        } else {
-            currentColumn += tokenLen;
-        }
-    }
+		private int crToLf(int ch) {
+			if (ch == '\r')
+				return '\n';
+			return ch;
+		}
 
-    private int getToken() throws IOException {
-        currentValue = null;
-        skipWS();
-        String id;
-        switch (reader.lookAhead()) {
-        case -1:
-            tokenLen = 0;
-            return 0;
-        case '\n':
-            tokenLen = 1;
-            currentValue = new Position(currentRow, currentColumn);
-            return reader.read();
-        default:
-            if (punctuation.containsKey((char) reader.lookAhead())) {
-                char c = (char) reader.read();
-                tokenLen = 1;
-                currentValue = new Position(currentRow, currentColumn);
-                return punctuation.get(c);
-            }
+		private void prepareLookAhead() throws IOException {
+			if (next == -1)
+				next = reader.read();
+		}
 
-            id = extractIdentifier();
-            return getKeywordOrIdentifierToken(id);
-        }
-    }
+		public int read() throws IOException {
+			prepareLookAhead();
+			int ch = next;
+			next = reader.read();
+			if ((ch == '\r' && next == '\n') || (ch == '\n' && next == '\r'))
+				next = reader.read();
+			return crToLf(ch);
+		}
+	}
 
-    private int getKeywordOrIdentifierToken(String id) {
-        Integer keywordToken = keywords.get(id);
-        if (keywordToken != null) {
-            currentValue = new Position(currentRow, currentColumn);
-            return keywordToken;
-        }
-        return identifierToken;
-    }
+	private LAReader reader;
+	private final int identifierToken;
+	private HashMap<String, Integer> keywords;
+	private Map<Character, Integer> punctuation;
+	private Cursor cursor = new Cursor();
+	private int currentToken = 0;
+	private Object currentValue = null;
+	private int tokenLen = 0;
 
-    private void skipWS() throws IOException {
-        while (reader.lookAhead() == ' ') {
-            reader.read();
-            ++currentColumn;
-        }
-    }
+	public Scanner(Reader reader, int identifierToken,
+			Map<String, Integer> keywords, Map<Character, Integer> punctuation) {
+		this.reader = new LAReader(reader);
+		this.identifierToken = identifierToken;
+		this.keywords = new HashMap<String, Integer>(keywords);
+		this.punctuation = new HashMap<Character, Integer>(punctuation);
+	}
 
-    private String extractIdentifier() throws IOException {
-        StringBuilder sb = new StringBuilder();
-        sb.append((char) reader.read());
-        tokenLen = 1;
-        while (reader.lookAhead() != -1 && reader.lookAhead() != ' ' && reader.lookAhead() != '\n'
-                        &&  !punctuation.containsKey((char) reader.lookAhead())) {
-            sb.append((char) reader.read());
-            ++tokenLen;
-        }
+	@Override
+	public boolean advance() throws IOException {
+		movePastCurrentToken();
+		currentToken = getToken();
+		return currentToken != 0;
+	}
 
-        String id = sb.toString();
-        currentValue = new Identifier(id, new Position(currentRow, currentColumn));
-        return id;
-    }
+	private void movePastCurrentToken() {
+		if (currentToken == '\n') {
+			cursor.newLine();
+		} else {
+			cursor.next(tokenLen);
+		}
+	}
 
-    @Override
-    public int token() {
-        return currentToken;
-    }
+	private int getToken() throws IOException {
+		currentValue = null;
+		skipSpace();
+		return extractToken();
+	}
 
-    @Override
-    public Object value() {
-        return currentValue;
-    }
+	private int extractToken() throws IOException {
+		int lookAhead = reader.lookAhead();
+		if (lookAhead == -1) {
+			tokenLen = 0;
+			return 0;
+		}
+		if (lookAhead == '\n')
+			return extractChar();
+		Integer p = getPunctuation(lookAhead);
+		if (p != null) {
+			extractChar();
+			return p;
+		}
+		return getKeywordOrIdentifierToken(extractIdentifier());
+	}
 
-    @Override
-    public int column() {
-        return currentColumn;
-    }
+	private Integer getPunctuation(int lookAhead) {
+		return punctuation.get((char) lookAhead);
+	}
 
-    @Override
-    public int row() {
-        return currentRow;
-    }
+	private int extractChar() throws IOException {
+		tokenLen = 1;
+		currentValue = getPosition();
+		return reader.read();
+	}
+
+	private Position getPosition() {
+		return new Position(cursor.row(), cursor.column());
+	}
+
+	private int getKeywordOrIdentifierToken(String id) {
+		tokenLen = id.length();
+		Integer keywordToken = keywords.get(id);
+		if (keywordToken != null) {
+			currentValue = getPosition();
+			return keywordToken;
+		}
+		currentValue = new Identifier(id, getPosition());
+		return identifierToken;
+	}
+
+	private void skipSpace() throws IOException {
+		while (reader.lookAhead() == ' ') {
+			reader.read();
+			cursor.next(1);
+		}
+	}
+
+	private String extractIdentifier() throws IOException {
+		StringBuilder sb = new StringBuilder();
+		sb.append((char) reader.read());
+		while (isIdentifierChar(reader.lookAhead())) {
+			sb.append((char) reader.read());
+		}
+		return sb.toString();
+	}
+
+	private boolean isIdentifierChar(int lookAhead) throws IOException {
+		return lookAhead != -1 && lookAhead != ' ' && lookAhead != '\n'
+				&& !punctuation.containsKey((char) lookAhead);
+	}
+
+	@Override
+	public int token() {
+		return currentToken;
+	}
+
+	@Override
+	public Object value() {
+		return currentValue;
+	}
+
+	@Override
+	public int column() {
+		return cursor.column();
+	}
+
+	@Override
+	public int row() {
+		return cursor.row();
+	}
 
 }
