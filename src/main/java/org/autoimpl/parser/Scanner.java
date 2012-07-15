@@ -31,6 +31,10 @@ public class Scanner implements Input {
 		int row() {
 			return row;
 		}
+
+		Position getPosition() {
+			return new Position(row(), column());
+		}
 	}
 
 	private static class LAReader {
@@ -127,22 +131,18 @@ public class Scanner implements Input {
 
 	private int extractChar() throws IOException {
 		tokenLen = 1;
-		currentValue = getPosition();
+		currentValue = cursor.getPosition();
 		return reader.read();
-	}
-
-	private Position getPosition() {
-		return new Position(cursor.row(), cursor.column());
 	}
 
 	private int getKeywordOrIdentifierToken(String id) {
 		tokenLen = id.length();
 		Integer keywordToken = keywords.get(id);
 		if (keywordToken != null) {
-			currentValue = getPosition();
+			currentValue = cursor.getPosition();
 			return keywordToken;
 		}
-		currentValue = new Identifier(id, getPosition());
+		currentValue = new Identifier(id, cursor.getPosition());
 		return identifierToken;
 	}
 
