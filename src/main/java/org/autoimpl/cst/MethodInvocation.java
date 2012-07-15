@@ -10,11 +10,11 @@ public class MethodInvocation {
 		this.method = method;
 	}
 
-	public Object object() {
+	public Identifier object() {
 		return object;
 	}
 
-	public Object method() {
+	public Identifier method() {
 		return method;
 	}
 

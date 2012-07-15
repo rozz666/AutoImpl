@@ -41,13 +41,17 @@ eols:
 	| EOL eols
 
 method_invocation:
-	| IDENTIFIER IDENTIFIER EOL {
-		statements = new ArrayList<MethodInvocation>();
+	IDENTIFIER IDENTIFIER EOL {
 		statements.add(new MethodInvocation((Identifier)$1, (Identifier)$2));
 	}
+	
+statements:
+	 | method_invocation statements
 
 grammar:
-    eols SPECIFICATION IDENTIFIER EOL method_invocation END {
+    eols SPECIFICATION IDENTIFIER EOL {
+		statements = new ArrayList<MethodInvocation>();
+    } statements END {
     	specification = new Specification((Identifier)$3, statements);
     }
   

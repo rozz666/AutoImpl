@@ -38,6 +38,11 @@ public class JayParserTest {
 		assertNull(spec);
 	}
 
+	private void assertIdentifier(String name, int row, int column,
+			Identifier id) {
+		assertEquals(new Identifier(name, new Position(row, column)), id);
+	}
+
 	@After
 	public void tearDown() {
 		context.assertIsSatisfied();
@@ -46,8 +51,7 @@ public class JayParserTest {
 	@Test
 	public void shouldParseAnEmptySpecification() {
 		parse("specification spec_name\nend");
-		assertEquals(new Identifier("spec_name", new Position(1, 15)),
-				spec.name());
+		assertIdentifier("spec_name", 1, 15, spec.name());
 	}
 
 	@Test
@@ -76,14 +80,26 @@ public class JayParserTest {
 	public void shouldFailWhenMissingEolAfterSpecificationName() {
 		assertErrorWithSource("specification x", 1, 16, "missing end-of-line");
 	}
-	
+
 	@Test
 	public void shouldParseSendingAMessageToAnObject() {
 		parse("specification x\nAn_object new\nend");
 		assertEquals(1, spec.statements().size());
-		MethodInvocation m = (MethodInvocation)spec.statements().get(0);
-		assertEquals(new Identifier("An_object", new Position(2, 1)), m.object());
-		assertEquals(new Identifier("new", new Position(2, 11)), m.method());
+		MethodInvocation m = (MethodInvocation) spec.statements().get(0);
+		assertIdentifier("An_object", 2, 1, m.object());
+		assertIdentifier("new", 2, 11, m.method());
+	}
+
+	@Test
+	public void shouldParseMultipleSendingsOfMessagesToObjects() {
+		parse("specification x\nA m1\nB m2\nend");
+		assertEquals(2, spec.statements().size());
+		MethodInvocation m1 = (MethodInvocation) spec.statements().get(0);
+		assertEquals("A", m1.object().name());
+		assertEquals("m1", m1.method().name());
+		MethodInvocation m2 = (MethodInvocation) spec.statements().get(1);
+		assertEquals("B", m2.object().name());
+		assertEquals("m2", m2.method().name());
 	}
 
 }
