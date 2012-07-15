@@ -76,6 +76,8 @@ grammar:
 			return "'end'";
 		if (contains(expected, EOL))
 			return "end-of-line";
+		if (statements != null)
+			return "message name";
 		return "specification name";
 	}
 	

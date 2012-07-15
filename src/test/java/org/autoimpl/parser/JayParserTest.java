@@ -102,4 +102,9 @@ public class JayParserTest {
 		assertEquals("m2", m2.method().name());
 	}
 
+	@Test
+	public void shouldFailWhenMissingAMessageName() {
+		assertErrorWithSource("specification a\nzyx\nend", 2, 4,
+				"missing message name");
+	}
 }
