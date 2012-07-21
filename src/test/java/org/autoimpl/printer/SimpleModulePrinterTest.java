@@ -11,12 +11,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(JMock.class)
-public class ModulePrinterTest {
+public class SimpleModulePrinterTest {
 
 	Mockery context = new JUnit4Mockery();
 	ClassPrinter classPrinter = context.mock(ClassPrinter.class);
 	private ModuleDefinition moduleDef = new ModuleDefinition();
-	ModulePrinter printer = new ModulePrinter(classPrinter);
+	SimpleModulePrinter printer = new SimpleModulePrinter(classPrinter);
 	Sequence seq = context.sequence("classes");
 
 	@Test

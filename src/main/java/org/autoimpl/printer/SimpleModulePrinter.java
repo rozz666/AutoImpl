@@ -3,11 +3,11 @@ package org.autoimpl.printer;
 import org.autoimpl.ast.ClassDefinition;
 import org.autoimpl.ast.ModuleDefinition;
 
-public class ModulePrinter {
+public class SimpleModulePrinter {
 
 	private ClassPrinter classPrinter;
 
-	public ModulePrinter(ClassPrinter classPrinter) {
+	public SimpleModulePrinter(ClassPrinter classPrinter) {
 		this.classPrinter = classPrinter;
 	}
 
