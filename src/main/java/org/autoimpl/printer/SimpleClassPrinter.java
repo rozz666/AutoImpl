@@ -4,6 +4,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 
 import org.autoimpl.ast.ClassDefinition;
+import org.autoimpl.ast.InitializerDefinition;
 
 public class SimpleClassPrinter {
 
@@ -15,6 +16,10 @@ public class SimpleClassPrinter {
 
 	public void printClass(ClassDefinition classDefinition) {
 		out.println("class " + classDefinition.name());
+		for (InitializerDefinition init : classDefinition.initializers()) {
+			out.println("    init " + init.name());
+			out.println("    end");
+		}
 		out.println("end");
 	}
 
